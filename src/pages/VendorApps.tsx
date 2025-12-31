@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo } from "react";
-import { mockApps } from "@/data/apps";
+import { useApp } from "@/context/AppContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AppCard from "@/components/AppCard";
@@ -21,6 +21,7 @@ const formatDownloads = (downloads: number): string => {
 const VendorApps = () => {
   const { vendorName } = useParams();
   const decodedName = decodeURIComponent(vendorName || "");
+  const { apps } = useApp();
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -28,8 +29,8 @@ const VendorApps = () => {
   }, [vendorName]);
 
   const vendorApps = useMemo(() => {
-    return mockApps.filter((app) => app.vendorName === decodedName);
-  }, [decodedName]);
+    return apps.filter((app) => app.vendorName === decodedName);
+  }, [decodedName, apps]);
 
   const stats = useMemo(() => {
     const totalDownloads = vendorApps.reduce((sum, app) => sum + app.metrics.downloads, 0);
