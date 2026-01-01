@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo } from "react";
+import { App } from "@/data/apps";
 import { useApp } from "@/context/AppContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -40,7 +41,7 @@ const VendorApps = () => {
     return { totalDownloads, avgRating: avgRating.toFixed(1) };
   }, [vendorApps]);
 
-  const handleDownload = (app: typeof mockApps[0]) => {
+  const handleDownload = (app: App) => {
     toast.success(`Starting download: ${app.name}`, {
       description: `Version ${app.version} • ${app.size}`,
     });
