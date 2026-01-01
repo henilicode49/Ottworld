@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { App } from "@/data/apps";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AppCardProps {
   app: App;
@@ -105,6 +106,30 @@ const AppCard = ({ app, onDownload, onMatureClick }: AppCardProps) => {
         >
           {app.isMature ? "Verify Age" : "Get"}
         </Button>
+      </div>
+    </div>
+  );
+};
+
+export const AppCardSkeleton = () => {
+  return (
+    <div className="rounded-2xl p-4 border border-border/50 bg-card/40 h-full backdrop-blur-sm">
+      <div className="flex items-start gap-4 mb-4">
+        <Skeleton className="w-16 h-16 rounded-xl shrink-0" />
+        <div className="flex-1 min-w-0">
+          <Skeleton className="h-5 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-1/2 mb-2" />
+          <Skeleton className="h-3 w-full" />
+        </div>
+      </div>
+      <div className="flex gap-2 mb-4">
+        <Skeleton className="h-5 w-12" />
+        <Skeleton className="h-5 w-12" />
+        <Skeleton className="h-5 w-12" />
+      </div>
+      <div className="flex items-center justify-between pt-3 border-t border-border/50">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-8 w-16" />
       </div>
     </div>
   );

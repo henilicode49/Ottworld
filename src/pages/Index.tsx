@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import CategorySidebar from "@/components/CategorySidebar";
 import MobileCategoryFilter from "@/components/MobileCategoryFilter";
-import AppCard from "@/components/AppCard";
+import AppCard, { AppCardSkeleton } from "@/components/AppCard";
 import AgeVerificationModal from "@/components/AgeVerificationModal";
 import { App, categories } from "@/data/apps";
 import { TrendingUp, Clock } from "lucide-react";
@@ -20,6 +20,15 @@ const Index = () => {
   const [ageVerificationOpen, setAgeVerificationOpen] = useState(false);
   const [pendingMatureApp, setPendingMatureApp] = useState<App | null>(null);
   const [verifiedAge, setVerifiedAge] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading state for smoother UX
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sync category with URL params
   useEffect(() => {
@@ -137,7 +146,7 @@ const Index = () => {
               loop
               playsInline
               preload="auto"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover animate-ken-burns"
             >
               <source
                 src="/videos/hero-video.mp4"
@@ -216,20 +225,30 @@ const Index = () => {
                     <h3 className="font-medium text-sm text-muted-foreground">Trending Now</h3>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {trendingApps.map((app) => (
-                      <AppCard
-                        key={app.id}
-                        app={app}
-                        onDownload={handleDownload}
-                        onMatureClick={handleMatureClick}
-                      />
-                    ))}
+                    {isLoading
+                      ? Array.from({ length: 4 }).map((_, i) => (
+                        <AppCardSkeleton key={i} />
+                      ))
+                      : trendingApps.map((app) => (
+                        <AppCard
+                          key={app.id}
+                          app={app}
+                          onDownload={handleDownload}
+                          onMatureClick={handleMatureClick}
+                        />
+                      ))}
                   </div>
                 </div>
               )}
 
               {/* Apps Grid */}
-              {filteredApps.length > 0 ? (
+              {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <AppCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : filteredApps.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                   {filteredApps.map((app) => (
                     <AppCard
