@@ -4,7 +4,7 @@ import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Edit, Eye } from 'lucide-react';
+import { Edit, Eye, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const MyApps = () => {
@@ -17,7 +17,9 @@ export const MyApps = () => {
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-2xl font-bold">My Applications</h1>
                 <Link to="/vendor/add">
-                    <Button>Upload New App</Button>
+                    <Button className="w-10 h-10 p-0 flex items-center justify-center rounded-full">
+                        <Upload className="w-5 h-5" />
+                    </Button>
                 </Link>
             </div>
 

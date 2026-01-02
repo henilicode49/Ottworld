@@ -17,7 +17,7 @@ export const HeroCarousel = ({ featuredApps }) => {
     if (featuredApps.length === 0) return null;
 
     return (
-        <div className="relative w-full h-[500px] overflow-hidden rounded-2xl mb-12 group">
+        <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden rounded-2xl mb-8 md:mb-12 group">
             {featuredApps.map((app, index) => (
                 <div
                     key={app.id}
@@ -37,20 +37,29 @@ export const HeroCarousel = ({ featuredApps }) => {
                     </div>
 
                     {/* Content */}
-                    <div className="absolute bottom-0 left-0 p-10 max-w-2xl">
-                        <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/20 backdrop-blur-md">
-                            <span className="text-xs font-bold uppercase tracking-wider">Featured</span>
+                    <div className="absolute bottom-0 left-0 p-6 md:p-10 max-w-2xl w-full">
+                        <div className="mb-3 md:mb-4 inline-flex items-center gap-2 px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-primary/20 text-primary border border-primary/20 backdrop-blur-md">
+                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Featured</span>
                         </div>
-                        <img src={app.iconUrl} className="w-20 h-20 rounded-2xl mb-6 shadow-2xl" />
-                        <h2 className="text-5xl font-bold text-white mb-4 leading-tight">{app.name}</h2>
-                        <p className="text-xl text-slate-300 mb-6 line-clamp-2">{app.shortDescription}</p>
-                        <div className="flex items-center gap-6">
-                            <Link to={`/app/${app.id}`}>
-                                <Button className="h-14 px-8 text-lg rounded-xl shadow-xl shadow-primary/20">
-                                    View Details <ChevronRight className="w-5 h-5 ml-1" />
+                        <div className="flex items-end gap-4 md:block mb-4 md:mb-6">
+                            <img src={app.iconUrl} className="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-2xl" />
+                            <div className="md:hidden">
+                                <h2 className="text-2xl font-bold text-white leading-tight">{app.name}</h2>
+                                <StarRating rating={app.rating} showCount={false} />
+                            </div>
+                        </div>
+                        <h2 className="hidden md:block text-5xl font-bold text-white mb-4 leading-tight">{app.name}</h2>
+                        <p className="text-sm md:text-xl text-slate-300 mb-4 md:mb-6 line-clamp-2">{app.shortDescription}</p>
+                        <div className="flex items-center gap-4 md:gap-6">
+                            <Link to={`/app/${app.id}`} className="flex-1 md:flex-none">
+                                <Button className="h-10 md:h-14 px-6 md:px-8 text-sm md:text-lg rounded-xl shadow-xl shadow-primary/20 w-full md:w-auto">
+                                    {/* Mobile text vs Desktop text */}
+                                    <span className="md:hidden">Get</span>
+                                    <span className="hidden md:inline">View Details</span>
+                                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5 ml-1 inline" />
                                 </Button>
                             </Link>
-                            <div className="flex flex-col">
+                            <div className="hidden md:flex flex-col">
                                 <StarRating rating={app.rating} showCount={false} />
                                 <span className="text-sm text-slate-400 mt-1">{app.downloads} downloads</span>
                             </div>

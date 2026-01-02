@@ -6,7 +6,34 @@ import { Download } from 'lucide-react';
 
 import { StarRating } from './ui/StarRating';
 
-export const AppCard = ({ app }) => {
+export const AppCard = ({ app, variant = 'card' }) => {
+    if (variant === 'list') {
+        return (
+            <Link to={`/app/${app.id}`}>
+                <div className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0 group">
+                    <img
+                        src={app.iconUrl}
+                        alt={app.name}
+                        className="w-14 h-14 rounded-2xl bg-slate-800 object-cover shadow-lg group-hover:scale-105 transition-transform"
+                    />
+                    <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base text-slate-100 mb-0.5 truncate group-hover:text-primary transition-colors">
+                            {app.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 truncate">{app.shortDescription}</p>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1">
+                        <button className="px-5 py-1.5 rounded-full bg-white/10 text-xs font-bold text-primary group-hover:bg-white/20 transition-colors uppercase tracking-wide">
+                            Get
+                        </button>
+                        <span className="text-[10px] text-slate-500">In-App Purchases</span>
+                    </div>
+                </div>
+            </Link>
+        );
+    }
+
     return (
         <Link to={`/app/${app.id}`}>
             <GlassCard className="h-full hover:-translate-y-1 hover:shadow-primary/10 transition-all duration-300 group p-5 flex flex-col">

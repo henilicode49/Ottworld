@@ -21,18 +21,18 @@ export const VendorDashboard = () => {
                 <p className="text-slate-400">Here's what's happening with your apps today.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <GlassCard className="bg-blue-500/10 border-blue-500/20">
-                    <p className="text-slate-400 mb-2">Total Apps</p>
-                    <div className="text-4xl font-bold">{myApps.length}</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-8 md:mb-10">
+                <GlassCard className="p-4 md:p-6 bg-blue-500/10 border-blue-500/20">
+                    <p className="text-xs md:text-base text-slate-400 mb-1 md:mb-2">Total Apps</p>
+                    <div className="text-2xl md:text-4xl font-bold">{myApps.length}</div>
                 </GlassCard>
-                <GlassCard className="bg-green-500/10 border-green-500/20">
-                    <p className="text-slate-400 mb-2">Live Apps</p>
-                    <div className="text-4xl font-bold text-green-400">{approvedCount}</div>
+                <GlassCard className="p-4 md:p-6 bg-green-500/10 border-green-500/20">
+                    <p className="text-xs md:text-base text-slate-400 mb-1 md:mb-2">Live Apps</p>
+                    <div className="text-2xl md:text-4xl font-bold text-green-400">{approvedCount}</div>
                 </GlassCard>
-                <GlassCard className="bg-purple-500/10 border-purple-500/20">
-                    <p className="text-slate-400 mb-2">Total Downloads (Est.)</p>
-                    <div className="text-4xl font-bold text-purple-400">{totalDownloads.toLocaleString()}</div>
+                <GlassCard className="col-span-2 md:col-span-1 p-4 md:p-6 bg-purple-500/10 border-purple-500/20">
+                    <p className="text-xs md:text-base text-slate-400 mb-1 md:mb-2">Total Downloads (Est.)</p>
+                    <div className="text-2xl md:text-4xl font-bold text-purple-400">{totalDownloads.toLocaleString()}</div>
                 </GlassCard>
             </div>
 

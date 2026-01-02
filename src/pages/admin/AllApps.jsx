@@ -62,7 +62,7 @@ export const AllApps = () => {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     {statusFilter ? (
                         <>
@@ -71,7 +71,7 @@ export const AllApps = () => {
                         </>
                     ) : 'All Applications'}
                 </h1>
-                <div className="relative w-64">
+                <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                         placeholder="Search..."
@@ -82,7 +82,45 @@ export const AllApps = () => {
                 </div>
             </div>
 
-            <GlassCard className="p-0 overflow-hidden">
+            {/* Mobile List View */}
+            <div className="space-y-4 md:hidden">
+                {filteredApps.map(app => (
+                    <GlassCard key={app.id} className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                <img src={app.iconUrl} alt="" className="w-12 h-12 rounded bg-slate-800" />
+                                <div>
+                                    <div className="font-bold text-slate-200">{app.name}</div>
+                                    <div className="text-xs text-slate-400">{app.vendorName}</div>
+                                </div>
+                            </div>
+                            <Badge status={app.status} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 py-3 border-t border-b border-white/5 mb-3">
+                            <div>
+                                <div className="text-[10px] uppercase text-slate-500 font-bold">Downloads</div>
+                                <div className="text-sm font-mono text-slate-300">{app.downloads || '-'}</div>
+                            </div>
+                            <div>
+                                <div className="text-[10px] uppercase text-slate-500 font-bold">Active Users</div>
+                                <div className="text-sm font-mono text-slate-300">{app.activeUsers || '-'}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                            <div className="text-xs text-slate-500">{new Date(app.createdAt).toLocaleDateString()}</div>
+                            <Link to={`/admin/apps/${app.id}`} className="text-primary hover:underline text-sm font-medium">View Details</Link>
+                        </div>
+                    </GlassCard>
+                ))}
+                {filteredApps.length === 0 && (
+                    <div className="p-8 text-center text-slate-500 glass-panel rounded-xl">
+                        No apps found.
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop Table View */}
+            <GlassCard className="hidden md:block p-0 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-white/5 border-b border-white/10 text-slate-400 text-sm">

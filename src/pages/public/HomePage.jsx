@@ -63,9 +63,17 @@ export const HomePage = () => {
                                 View all <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Desktop Grid View */}
+                        <div className="hidden md:grid md:grid-cols-3 gap-6">
                             {trending.slice(0, 6).map(app => (
                                 <AppCard key={app.id} app={app} />
+                            ))}
+                        </div>
+
+                        {/* Mobile List View */}
+                        <div className="md:hidden flex flex-col space-y-2">
+                            {trending.slice(0, 6).map(app => (
+                                <AppCard key={app.id} app={app} variant="list" />
                             ))}
                         </div>
                     </div>

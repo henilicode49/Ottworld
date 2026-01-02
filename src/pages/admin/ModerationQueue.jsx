@@ -19,7 +19,51 @@ export const ModerationQueue = () => {
         <div>
             <h1 className="text-2xl font-bold mb-6">Moderation Queue</h1>
 
-            <GlassCard className="p-0 overflow-hidden">
+            <div className="space-y-4 md:hidden">
+                {pendingApps.map(app => (
+                    <GlassCard key={app.id} className="p-4">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <img src={app.iconUrl} className="w-12 h-12 rounded-lg bg-slate-800" />
+                                <div>
+                                    <div className="font-bold text-slate-200">{app.name}</div>
+                                    <div className="text-sm text-slate-400">{app.vendorName}</div>
+                                    <div className="text-xs text-slate-500">{new Date(app.createdAt).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            <Link to={`/app/${app.id}`} target="_blank">
+                                <Button variant="secondary" className="h-8 w-8 p-0" title="View Details">
+                                    <Eye className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => handleAction(app.id, 'approve')}
+                                className="flex-1 bg-green-600 hover:bg-green-500 h-9 px-3 text-xs"
+                            >
+                                <Check className="w-3 h-3 mr-1" /> Approve
+                            </Button>
+                            <Button
+                                onClick={() => handleAction(app.id, 'reject')}
+                                className="flex-1 btn-danger h-9 px-3 text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                            >
+                                <X className="w-3 h-3 mr-1" /> Reject
+                            </Button>
+                        </div>
+                    </GlassCard>
+                ))}
+                {pendingApps.length === 0 && (
+                    <div className="p-10 text-center text-slate-500 glass-panel rounded-xl">
+                        <div className="flex flex-col items-center justify-center">
+                            <Check className="w-10 h-10 text-green-500/50 mb-4" />
+                            <p>All caught up! No pending apps.</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <GlassCard className="hidden md:block p-0 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-white/5 border-b border-white/10 text-slate-400 text-sm">
