@@ -69,7 +69,7 @@ export const HeroCarousel = ({ featuredApps }) => {
             ))}
 
             {/* Indicators */}
-            <div className="absolute bottom-6 right-10 z-20 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-6 md:right-10 z-20 flex gap-2">
                 {featuredApps.map((_, idx) => (
                     <button
                         key={idx}
