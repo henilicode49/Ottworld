@@ -27,6 +27,8 @@ import { VendorDetailsPage } from './pages/admin/VendorDetailsPage';
 import { AdminAppDetailsPage } from './pages/admin/AdminAppDetailsPage';
 import { VendorAppDetails } from './pages/VendorAppDetails';
 
+import { Analytics } from "@vercel/analytics/react";
+
 function App() {
   return (
     <AuthProvider>
@@ -68,6 +70,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        <Analytics />
       </DataProvider>
     </AuthProvider>
   );
