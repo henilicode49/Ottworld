@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from './Button';
+import { Button } from './button';
 import { Download, Check, Loader2 } from 'lucide-react';
 
 export const InstallButton = ({ className, onInstall }) => {

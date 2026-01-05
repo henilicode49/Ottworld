@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { Edit, Eye, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
 import { InstallButton } from '../../components/ui/InstallButton';
