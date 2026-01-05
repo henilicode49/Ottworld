@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
-import { Button } from "../components/ui/Button";
+import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { GlassCard } from "../components/ui/GlassCard";
 import { AnalyticsChart } from "../components/ui/AnalyticsChart";

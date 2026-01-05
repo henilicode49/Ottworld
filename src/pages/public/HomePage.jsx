@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { AppCard } from '../../components/AppCard';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { HeroCarousel } from '../../components/HeroCarousel';
 import { TopCharts } from '../../components/ui/TopCharts';
 import { ArrowRight, Sparkles, TrendingUp, Trophy } from 'lucide-react';

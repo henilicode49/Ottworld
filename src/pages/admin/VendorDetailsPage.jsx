@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { Mail, Box, ShieldCheck, ChevronLeft } from 'lucide-react';
 import { AppCard } from '../../components/AppCard';
 

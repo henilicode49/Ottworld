@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { Input, TextArea } from '../../components/ui/Input';
 import { Upload, X, Smartphone, Globe, Monitor, AlertCircle } from 'lucide-react';
 

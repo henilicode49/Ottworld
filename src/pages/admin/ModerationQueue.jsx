@@ -1,7 +1,7 @@
 import React from 'react';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { Eye, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

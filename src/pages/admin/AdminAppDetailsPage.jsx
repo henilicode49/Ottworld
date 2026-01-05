@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
-import { Button } from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { ArrowLeft, CheckCircle, XCircle, Download, Calendar, Tag, Smartphone, ShieldAlert, AlertCircle } from 'lucide-react';
 
 export const AdminAppDetailsPage = () => {
