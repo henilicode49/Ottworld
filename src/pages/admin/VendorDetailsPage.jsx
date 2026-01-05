@@ -69,11 +69,11 @@ export const VendorDetailsPage = () => {
                 {vendorApps.length > 0 ? (
                     vendorApps.map(app => (
                         <div key={app.id}>
-                            <AppCard app={app} />
+                            <AppCard app={app} linkTo={`/admin/apps/${app.id}`} />
                             <div className="mt-2 text-center">
                                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${app.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                        app.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                            'bg-yellow-500/20 text-yellow-400'
+                                    app.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                        'bg-yellow-500/20 text-yellow-400'
                                     }`}>
                                     {app.status}
                                 </span>

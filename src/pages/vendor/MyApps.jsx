@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
@@ -7,10 +8,12 @@ import { Button } from '../../components/ui/Button';
 import { Edit, Eye, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+
 export const MyApps = () => {
     const { user } = useAuth();
     const { getVendorApps } = useData();
     const apps = getVendorApps(user.id);
+
 
     return (
         <div>
@@ -22,6 +25,7 @@ export const MyApps = () => {
                     </Button>
                 </Link>
             </div>
+
 
             <GlassCard className="p-0 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -48,20 +52,24 @@ export const MyApps = () => {
                                         </div>
                                     </td>
                                     <td className="p-4">
-                                        <Badge status={app.status} />
+                                        <Link to={`/vendor/app/details?id=${app.id}`}>
+                                            <Badge status={app.status} />
+                                        </Link>
                                     </td>
                                     <td className="p-4 text-slate-400">{app.version}</td>
-                                    <td className="p-4 text-slate-400">-</td>
+                                    <td className="p-4 text-slate-400">{app.downloads || '0'}</td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Link to={`/app/${app.id}`}>
+                                            <Link to={`/vendor/app/details/${app.id}`}>
                                                 <button className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white" title="View">
                                                     <Eye className="w-4 h-4" />
                                                 </button>
                                             </Link>
-                                            <button className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-primary" title="Edit">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
+                                            <Link to={`/vendor/app/edit/${app.id}`}>
+                                                <button className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-primary" title="Edit">
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                            </Link>
                                         </div>
                                     </td>
                                 </tr>

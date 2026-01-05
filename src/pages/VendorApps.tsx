@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo } from "react";
 import { App } from "@/data/apps";
 import { useApp } from "@/context/AppContext";
@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AppCard from "@/components/AppCard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Building2, Download, Star, Package } from "lucide-react";
+import { ArrowLeft, Building2, Download, Star, Package, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 const formatDownloads = (downloads: number): string => {
@@ -21,8 +21,9 @@ const formatDownloads = (downloads: number): string => {
 
 const VendorApps = () => {
   const { vendorName } = useParams();
+  const navigate = useNavigate();
   const decodedName = decodeURIComponent(vendorName || "");
-  const { apps } = useApp();
+  const { apps, currentVendor } = useApp();
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -32,6 +33,8 @@ const VendorApps = () => {
   const vendorApps = useMemo(() => {
     return apps.filter((app) => app.vendorName === decodedName);
   }, [decodedName, apps]);
+
+  const isOwner = currentVendor && currentVendor.businessName === decodedName;
 
   const stats = useMemo(() => {
     const totalDownloads = vendorApps.reduce((sum, app) => sum + app.metrics.downloads, 0);
@@ -87,7 +90,20 @@ const VendorApps = () => {
           </Link>
 
           {/* Vendor Header */}
-          <div className="glass rounded-xl p-5 mb-8 border border-border/50 shadow-sm">
+          <div className="glass rounded-xl p-5 mb-8 border border-border/50 shadow-sm relative overflow-hidden">
+            {/* Edit Profile Button for Owner */}
+            {isOwner && (
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute top-4 right-4 z-10"
+                onClick={() => navigate(`/${currentVendor.businessName}/dashboard`)}
+              >
+                <Edit className="h-3 w-3 mr-2" />
+                Manage Apps
+              </Button>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
               {/* Vendor Icon */}
               <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center shrink-0 border border-border/50 shadow-inner">
@@ -150,11 +166,30 @@ const VendorApps = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {vendorApps.map((app) => (
-                <div key={app.id} className="transform transition-all duration-300 hover:-translate-y-1">
-                  <AppCard
-                    app={app}
-                    onDownload={handleDownload}
-                  />
+                <div key={app.id} className="relative group">
+                  <div className="transform transition-all duration-300 group-hover:-translate-y-1">
+                    <AppCard
+                      app={app}
+                      onDownload={handleDownload}
+                    />
+                  </div>
+                  {/* Overlay or Button for Owner to Edit */}
+                  {isOwner && (
+                    <div className="absolute top-2 right-2 z-20">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-8 w-8 p-0 rounded-full shadow-lg bg-background/80 backdrop-blur-sm hover:bg-background"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          navigate(`/vendor/app/${app.id}`);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 text-primary" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

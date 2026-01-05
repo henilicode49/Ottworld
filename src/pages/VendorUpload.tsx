@@ -53,7 +53,11 @@ interface FormData {
 const VendorUpload = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { addApp, currentVendor, apps } = useApp();
+  const { id } = useParams(); // Get id from path parameter for edit mode
+  const appId = id; // Use id as appId for edit mode
+
+  // Use AppContext for everything
+  const { currentVendor, addApp, updateApp, apps } = useApp();
 
   const iconInputRef = useRef<HTMLInputElement>(null);
   const packageInputRef = useRef<HTMLInputElement>(null);
@@ -74,6 +78,33 @@ const VendorUpload = () => {
     iconPreview: null,
     packageFile: null
   });
+
+  const isEditMode = !!appId;
+
+  // Pre-fill data if in edit mode
+  useEffect(() => {
+    if (isEditMode && apps.length > 0) {
+      const appToEdit = apps.find(a => a.id === appId);
+      if (appToEdit && appToEdit.vendorId === currentVendor?.id) {
+        setFormData({
+          appName: appToEdit.name,
+          description: appToEdit.description,
+          category: appToEdit.category,
+          websiteUrl: "",
+          version: appToEdit.version,
+          price: appToEdit.price === "free" ? "" : appToEdit.price.toString(),
+          tags: appToEdit.tags.join(", "),
+          isMature: appToEdit.isMature || false,
+          termsAccepted: false, // Force re-accept
+          iconPreview: appToEdit.icon, // Map 'icon' to preview
+          packageFile: null // FORCE RE-UPLOAD
+        });
+      } else if (appToEdit && appToEdit.vendorId !== currentVendor?.id) {
+        toast({ title: "Error", description: "You cannot edit this app", variant: "destructive" });
+        navigate("/vendor/dashboard");
+      }
+    }
+  }, [isEditMode, appId, apps, currentVendor, navigate, toast]);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("vendorLoggedIn");
@@ -103,7 +134,7 @@ const VendorUpload = () => {
     }
   }, [navigate, toast, currentVendor, apps]);
 
-  const canUpload = subscription === "premium" || (subscription === "standard" && appsUploaded < 3);
+  const canUpload = isEditMode || subscription === "premium" || (subscription === "standard" && appsUploaded < 3);
 
   const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -145,7 +176,7 @@ const VendorUpload = () => {
     }
 
     if (!formData.packageFile) {
-      toast({ title: "Error", description: "Please upload an app package file", variant: "destructive" });
+      toast({ title: "Error", description: "Please upload the app package file (APK/IPA)", variant: "destructive" });
       return;
     }
 
@@ -159,33 +190,46 @@ const VendorUpload = () => {
       return;
     }
 
-    // Create new app object
-    const newApp = {
+    // Prepare App Object compatible with AppContext (apps.ts)
+    const appData = {
       vendorId: currentVendor?.id || "v1",
       vendorName: currentVendor?.businessName || "Unknown Vendor",
       name: formData.appName,
       category: formData.category,
-      price: formData.price ? parseFloat(formData.price) : ("free" as const),
-      status: "review" as const,
+      status: "review" as const, // Must be 'review'
       description: formData.description,
       shortDescription: formData.description.slice(0, 100) + (formData.description.length > 100 ? "..." : ""),
-      icon: "📱", // Fallback emoji if image rendering fails elsewhere, but in real app we'd use the URL
-      // In a real app, we would upload the file to storage and get a return URL.
-      // Here we will use the base64 string for the icon demo if supported by the display component,
-      // or just keep the generic emoji for list views if they strictly expect emoji/string.
-      // Let's assume for now we use a generic emoji for the list view but logically we have the file.
+      icon: formData.iconPreview || "", // 'icon', not 'iconUrl'
       version: formData.version || "1.0.0",
       size: `${(formData.packageFile.size / (1024 * 1024)).toFixed(1)} MB`,
-      lastUpdated: new Date().toISOString().split('T')[0],
-      isFeatured: false,
-      isMature: formData.isMature,
       tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-      screenshots: []
+      downloadUrl: "#", // 'downloadUrl', not 'apkUrl'
+      screenshots: [],
+      price: formData.price ? parseFloat(formData.price) : ("free" as const),
+      isMature: formData.isMature,
+      isFeatured: false,
+      lastUpdated: new Date().toISOString().split('T')[0]
     };
 
-    addApp(newApp);
+    if (isEditMode && appId) {
+      const originalApp = apps.find(a => a.id === appId);
+      if (!originalApp) return;
 
-    toast({ title: "Success!", description: "Your app has been submitted for review" });
+      // Use updateApp from AppContext
+      updateApp({
+        ...originalApp,
+        ...appData,
+        id: appId,
+        metrics: originalApp.metrics || { downloads: 0, revenue: 0, likes: 0, views: 0 },
+        screenshots: originalApp.screenshots || []
+      });
+      toast({ title: "Update Submitted", description: "Your app update has been submitted for review." });
+    } else {
+      // Use addApp from AppContext
+      addApp(appData);
+      toast({ title: "Success!", description: "Your app has been submitted for review" });
+    }
+
     navigate(`/${currentVendor?.businessName || 'vendor'}/dashboard`);
   };
 
@@ -241,8 +285,12 @@ const VendorUpload = () => {
                 <ArrowLeft className="h-4 w-4 mr-1.5" />
                 Back to Dashboard
               </Button>
-              <h1 className="text-3xl font-display font-bold">Upload New App</h1>
-              <p className="text-muted-foreground mt-1">Submit your application for review and publication.</p>
+              <h1 className="text-3xl font-display font-bold">{isEditMode ? "Update App" : "Upload New App"}</h1>
+              <p className="text-muted-foreground mt-1">
+                {isEditMode
+                  ? "Submit changes for your application. A new review will be required."
+                  : "Submit your application for review and publication."}
+              </p>
             </div>
           </div>
 
@@ -418,7 +466,15 @@ const VendorUpload = () => {
 
                     {/* App File Upload */}
                     <div className="space-y-2">
-                      <Label>App Package <span className="text-destructive">*</span></Label>
+                      <Label>
+                        {isEditMode ? "Updated App Package" : "App Package"} <span className="text-destructive">*</span>
+                      </Label>
+                      {isEditMode && (
+                        <p className="text-xs text-yellow-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          You must upload a new APK file to update your app
+                        </p>
+                      )}
                       <input
                         type="file"
                         accept=".apk,.ipa,.zip"
@@ -443,7 +499,9 @@ const VendorUpload = () => {
                             <div className="h-10 w-10 mx-auto rounded-full bg-muted group-hover:bg-primary/10 flex items-center justify-center mb-2 transition-colors">
                               <FileText className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <p className="text-xs text-muted-foreground group-hover:text-foreground">Click to upload APK/IPA</p>
+                            <p className="text-xs text-muted-foreground group-hover:text-foreground">
+                              {isEditMode ? "Click to upload updated APK/IPA" : "Click to upload APK/IPA"}
+                            </p>
                             <p className="text-[10px] text-muted-foreground/60 mt-1">Max size 100MB</p>
                           </>
                         )}
@@ -497,6 +555,21 @@ const VendorUpload = () => {
                   </CardContent>
                 </Card>
 
+                {/* Review Process Note */}
+                {isEditMode && (
+                  <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-blue-300">Review Process</p>
+                        <p className="text-xs text-slate-300">
+                          After submitting your updates, your app will be sent for admin review. Once approved by the admin, your updated app will go live and be visible to all users.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <Button type="button" variant="outline" onClick={() => navigate("/vendor/dashboard")}>
@@ -504,7 +577,7 @@ const VendorUpload = () => {
                   </Button>
                   <Button type="submit" variant="gradient" className="shadow-lg shadow-primary/20">
                     <Upload className="h-4 w-4 mr-2" />
-                    Submit App
+                    {isEditMode ? "Review App" : "Submit App"}
                   </Button>
                 </div>
 

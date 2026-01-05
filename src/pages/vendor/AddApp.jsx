@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button } from '../../components/ui/Button';
 import { Input, TextArea } from '../../components/ui/Input';
-import { Upload, X, Smartphone, Globe, Monitor } from 'lucide-react';
+import { Upload, X, Smartphone, Globe, Monitor, AlertCircle } from 'lucide-react';
 
 const CATEGORIES = ['Games', 'Productivity', 'Social', 'Utilities', 'Design', 'Education', 'Lifestyle', 'Health'];
 const PLATFORMS = ['Android', 'iOS', 'Web', 'Windows', 'MacOS'];
 
 export const AddApp = () => {
     const { user } = useAuth();
-    const { addApp } = useData();
+    const { addApp, updateApp, apps } = useData();
     const navigate = useNavigate();
+    const { id } = useParams(); // Get ID from URL for edit mode
     const [loading, setLoading] = useState(false);
+
+    const isEditMode = !!id;
 
     const [formData, setFormData] = useState({
         name: '',
@@ -27,8 +30,35 @@ export const AddApp = () => {
         iconUrl: '',
         apkUrl: '',
         screenshots: '', // Textarea input for comma/newline separated URLs
-        supportedPlatforms: ['Android']
+        supportedPlatforms: ['Android'],
+        updateChanges: '' // New field for update changes
     });
+
+    // Pre-fill form data if in edit mode
+    useEffect(() => {
+        if (isEditMode && apps.length > 0) {
+            const appToEdit = apps.find(app => app.id === id);
+            if (appToEdit && appToEdit.vendorId === user.id) {
+                setFormData({
+                    name: appToEdit.name,
+                    shortDescription: appToEdit.shortDescription,
+                    fullDescription: appToEdit.fullDescription,
+                    category: appToEdit.category,
+                    version: appToEdit.version,
+                    size: appToEdit.size,
+                    tags: Array.isArray(appToEdit.tags) ? appToEdit.tags.join(', ') : appToEdit.tags,
+                    iconUrl: appToEdit.iconUrl,
+                    apkUrl: '', // DO NOT pre-fill APK URL - force re-upload
+                    screenshots: Array.isArray(appToEdit.screenshots) ? appToEdit.screenshots.join('\n') : appToEdit.screenshots,
+                    supportedPlatforms: appToEdit.supportedPlatforms || ['Android'],
+                    updateChanges: '' // Always empty for new updates
+                });
+            } else if (appToEdit && appToEdit.vendorId !== user.id) {
+                alert('You cannot edit this app');
+                navigate('/vendor/apps');
+            }
+        }
+    }, [isEditMode, id, apps, user.id, navigate]);
 
     const handlePlatformChange = (platform) => {
         setFormData(prev => {
@@ -43,6 +73,13 @@ export const AddApp = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validate APK URL is provided
+        if (!formData.apkUrl || formData.apkUrl.trim() === '') {
+            alert('Please provide an APK/Download URL');
+            return;
+        }
+
         setLoading(true);
 
         // Simulate upload delay
@@ -53,7 +90,7 @@ export const AddApp = () => {
                 .map(s => s.trim())
                 .filter(s => s.length > 0);
 
-            const newApp = {
+            const appData = {
                 ...formData,
                 slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
                 // Use provided icon or fallback to seed
@@ -62,15 +99,24 @@ export const AddApp = () => {
                     'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80',
                     'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80'
                 ], // Fallback mocks if empty
-                apkUrl: formData.apkUrl || '#',
+                apkUrl: formData.apkUrl,
                 tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
                 vendorId: user.id,
                 vendorName: user.name,
                 // Ensure platforms is never empty
-                supportedPlatforms: formData.supportedPlatforms.length > 0 ? formData.supportedPlatforms : ['Android']
+                supportedPlatforms: formData.supportedPlatforms.length > 0 ? formData.supportedPlatforms : ['Android'],
+                // Include updateChanges if in edit mode
+                updateChanges: isEditMode ? formData.updateChanges : undefined
             };
 
-            addApp(newApp);
+            if (isEditMode) {
+                // Update existing app
+                updateApp(id, { ...appData, status: 'review' }); // Set to review for admin approval
+            } else {
+                // Add new app
+                addApp(appData);
+            }
+
             setLoading(false);
             navigate('/vendor/apps');
         }, 1500);
@@ -78,8 +124,12 @@ export const AddApp = () => {
 
     return (
         <div className="max-w-4xl mx-auto pb-20 px-2 md:px-0">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Publish New App</h1>
-            <p className="text-sm md:text-base text-slate-400 mb-6 md:mb-8">Fill in the details to submit your app for review.</p>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                {isEditMode ? 'Update App' : 'Publish New App'}
+            </h1>
+            <p className="text-sm md:text-base text-slate-400 mb-6 md:mb-8">
+                {isEditMode ? 'Update your app details and submit for review.' : 'Fill in the details to submit your app for review.'}
+            </p>
 
             <GlassCard className="p-4 md:p-8">
                 <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
@@ -131,6 +181,25 @@ export const AddApp = () => {
                                 onChange={e => setFormData({ ...formData, fullDescription: e.target.value })}
                             />
                         </div>
+
+                        {/* Update Changes - Only in Edit Mode */}
+                        {isEditMode && (
+                            <div className="space-y-1.5 md:space-y-2">
+                                <label className="text-xs md:text-sm font-medium text-slate-300">
+                                    Update Changes <span className="text-destructive">*</span>
+                                </label>
+                                <TextArea
+                                    required
+                                    placeholder="Describe what's new in this update (bug fixes, new features, improvements)..."
+                                    className="h-24 md:h-32 text-sm"
+                                    value={formData.updateChanges}
+                                    onChange={e => setFormData({ ...formData, updateChanges: e.target.value })}
+                                />
+                                <p className="text-xs text-slate-500">
+                                    This will help the admin understand what changed in this version.
+                                </p>
+                            </div>
+                        )}
                     </section>
 
                     {/* Media Assets */}
@@ -193,8 +262,17 @@ export const AddApp = () => {
                                 />
                             </div>
                             <div className="col-span-2 md:col-span-1 space-y-1.5 md:space-y-2">
-                                <label className="text-xs md:text-sm font-medium text-slate-300">Download/APK URL</label>
+                                <label className="text-xs md:text-sm font-medium text-slate-300">
+                                    {isEditMode ? 'Updated Download/APK URL *' : 'Download/APK URL'}
+                                </label>
+                                {isEditMode && (
+                                    <p className="text-xs text-yellow-500 flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3" />
+                                        You must provide a new APK URL to update your app
+                                    </p>
+                                )}
                                 <Input
+                                    required={isEditMode}
                                     placeholder="https://..."
                                     value={formData.apkUrl}
                                     onChange={e => setFormData({ ...formData, apkUrl: e.target.value })}
@@ -233,10 +311,25 @@ export const AddApp = () => {
                         </div>
                     </section>
 
+                    {/* Review Process Note */}
+                    {isEditMode && (
+                        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                            <div className="flex items-start gap-3">
+                                <AlertCircle className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium text-blue-300">Review Process</p>
+                                    <p className="text-xs text-slate-300">
+                                        After submitting your updates, your app will be sent for admin review. Once approved by the admin, your updated app will go live and be visible to all users.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="pt-6 border-t border-white/5 flex flex-col-reverse md:flex-row items-center justify-end gap-3 md:gap-4">
                         <Button type="button" variant="ghost" onClick={() => navigate('/vendor')} className="w-full md:w-auto text-sm">Cancel</Button>
                         <Button type="submit" disabled={loading} className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 text-sm">
-                            {loading ? 'Submitting...' : 'Submit App for Review'}
+                            {loading ? 'Submitting...' : (isEditMode ? 'Submit for Review' : 'Submit App for Review')}
                         </Button>
                     </div>
                 </form>

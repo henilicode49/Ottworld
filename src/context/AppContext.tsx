@@ -13,6 +13,7 @@ interface AppContextType {
     registerVendor: (name: string, email: string, password: string, companyName: string) => Promise<boolean>;
     logout: () => void;
     updateAppStatus: (appId: string, status: 'pending' | 'approved' | 'rejected' | 'review') => void;
+    updateApp: (app: App) => void;
     addApp: (app: Omit<App, 'id' | 'metrics'>) => void;
     getVendorById: (vendorId: string) => Vendor | undefined;
 }
@@ -173,6 +174,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toast.success(`App status updated to ${status}`);
     };
 
+    const updateApp = (updatedApp: App) => {
+        setApps(prev => prev.map(app =>
+            app.id === updatedApp.id ? updatedApp : app
+        ));
+        toast.success("App updated successfully");
+    };
+
     const addApp = (newApp: Omit<App, 'id' | 'metrics'>) => {
         const id = (Math.max(...apps.map(a => Number(a.id)), 0) + 1).toString();
         const app: App = {
@@ -200,6 +208,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             logout,
             updateAppStatus,
             addApp,
+            updateApp,
             getVendorById
         }}>
             {children}

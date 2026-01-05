@@ -20,10 +20,12 @@ import AdminAppDetails from "./pages/AdminAppDetails";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
 const HomeRoute = () => {
   const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
   const isVendorLoggedIn = localStorage.getItem("vendorLoggedIn") === "true";
   const vendorName = localStorage.getItem("vendorName");
+
 
   if (isAdminLoggedIn) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -38,9 +40,11 @@ const HomeRoute = () => {
   return <Index />;
 };
 
+
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
   const isVendorLoggedIn = localStorage.getItem("vendorLoggedIn") === "true";
+
 
   if (isVendorLoggedIn) {
     return <Navigate to="/vendor/dashboard" replace />;
@@ -51,9 +55,11 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+
 const AdminRoute = () => {
   const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
   const isVendorLoggedIn = localStorage.getItem("vendorLoggedIn") === "true";
+
 
   if (isVendorLoggedIn) {
     return <Navigate to="/vendor/dashboard" replace />;
@@ -64,9 +70,11 @@ const AdminRoute = () => {
   return <Navigate to="/admin/login" replace />;
 };
 
+
 const ProtectedVendorRoute = ({ children }: { children: React.ReactNode }) => {
   const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
   const isVendorLoggedIn = localStorage.getItem("vendorLoggedIn") === "true";
+
 
   if (isAdminLoggedIn) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -77,10 +85,12 @@ const ProtectedVendorRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+
 const VendorRoute = () => {
   const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
   const isVendorLoggedIn = localStorage.getItem("vendorLoggedIn") === "true";
   const vendorName = localStorage.getItem("vendorName");
+
 
   if (isAdminLoggedIn) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -92,11 +102,17 @@ const VendorRoute = () => {
   return <Navigate to="/vendor/login" replace />;
 };
 
+
 const queryClient = new QueryClient();
+
+
+import { Analytics } from "@vercel/analytics/react";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AppProvider>
+      <Analytics />
+
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -107,22 +123,27 @@ const App = () => (
             <Route path="/vendor" element={<VendorRoute />} />
             <Route path="/vendor/login" element={<VendorLogin />} />
 
+
             {/* New Dynamic Vendor Routes */}
             <Route path="/:vendorName/dashboard" element={<ProtectedVendorRoute><VendorDashboard /></ProtectedVendorRoute>} />
             <Route path="/:vendorName/:vendorId/upload" element={<ProtectedVendorRoute><VendorUpload /></ProtectedVendorRoute>} />
+
 
             {/* Legacy/Generic routes kept for backward compatibility or direct access */}
             <Route path="/vendor/:vendorName" element={<VendorApps />} /> {/* Public profile */}
             <Route path="/vendor/dashboard" element={<ProtectedVendorRoute><VendorDashboard /></ProtectedVendorRoute>} />
             <Route path="/vendor/subscription" element={<ProtectedVendorRoute><VendorSubscription /></ProtectedVendorRoute>} />
             <Route path="/vendor/upload" element={<ProtectedVendorRoute><VendorUpload /></ProtectedVendorRoute>} />
-            <Route path="/vendor/app/:id" element={<ProtectedVendorRoute><VendorAppDetails /></ProtectedVendorRoute>} />
+            <Route path={`/vendor/app/edit/:id`} element={<ProtectedVendorRoute><VendorUpload /></ProtectedVendorRoute>} />
+            <Route path="/vendor/app/details/:id" element={<ProtectedVendorRoute><VendorAppDetails /></ProtectedVendorRoute>} />
+
 
             <Route path="/admin" element={<AdminRoute />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
             <Route path="/admin/app/:id" element={<ProtectedAdminRoute><AdminAppDetails /></ProtectedAdminRoute>} />
             <Route path="/upload" element={<ProtectedAdminRoute><UploadApp /></ProtectedAdminRoute>} />
+
 
             <Route path="/policies" element={<Policies />} />
             <Route path="/terms" element={<Policies />} />
@@ -132,6 +153,7 @@ const App = () => (
             <Route path="/monetization" element={<Policies />} />
             <Route path="/contact" element={<Policies />} />
 
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
@@ -140,4 +162,5 @@ const App = () => (
   </QueryClientProvider>
 );
 
-export default App;
+
+export default App; 

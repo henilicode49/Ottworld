@@ -6,8 +6,9 @@ import { Eye, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const ModerationQueue = () => {
-    const { getPendingApps, updateAppStatus } = useData();
-    const pendingApps = getPendingApps();
+    const { apps, updateAppStatus } = useData();
+    // Get both pending and review status apps
+    const pendingApps = apps.filter(app => app.status === 'pending' || app.status === 'review');
 
     const handleAction = (appId, action) => {
         // Simulate API delay
@@ -29,6 +30,12 @@ export const ModerationQueue = () => {
                                     <div className="font-bold text-slate-200">{app.name}</div>
                                     <div className="text-sm text-slate-400">{app.vendorName}</div>
                                     <div className="text-xs text-slate-500">{new Date(app.createdAt).toLocaleDateString()}</div>
+                                    {/* Update indicator */}
+                                    {app.updateChanges && (
+                                        <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400">
+                                            Update
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <Link to={`/app/${app.id}`} target="_blank">
@@ -38,6 +45,16 @@ export const ModerationQueue = () => {
                             </Link>
                         </div>
                         <div className="flex gap-2">
+                            <Link to={`/admin/apps/${app.id}`} className="flex-1">
+                                <Button
+                                    variant="secondary"
+                                    className="w-full h-9 px-3 text-xs"
+                                >
+                                    Review
+                                </Button>
+                            </Link>
+                        </div>
+                        <div className="flex gap-2 mt-2">
                             <Button
                                 onClick={() => handleAction(app.id, 'approve')}
                                 className="flex-1 bg-green-600 hover:bg-green-500 h-9 px-3 text-xs"
@@ -80,7 +97,15 @@ export const ModerationQueue = () => {
                                     <div className="flex items-center gap-3">
                                         <img src={app.iconUrl} className="w-10 h-10 rounded bg-slate-800" />
                                         <div>
-                                            <div className="font-bold text-slate-200">{app.name}</div>
+                                            <div className="font-bold text-slate-200 flex items-center gap-2">
+                                                {app.name}
+                                                {/* Update indicator */}
+                                                {app.updateChanges && (
+                                                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400">
+                                                        Update
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="text-xs text-slate-500">{app.category}</div>
                                         </div>
                                     </div>
@@ -89,9 +114,9 @@ export const ModerationQueue = () => {
                                 <td className="p-4 text-slate-400">{new Date(app.createdAt).toLocaleDateString()}</td>
                                 <td className="p-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                        <Link to={`/app/${app.id}`} target="_blank">
-                                            <Button variant="secondary" className="h-8 w-8 p-0" title="View Details">
-                                                <Eye className="w-4 h-4" />
+                                        <Link to={`/admin/apps/${app.id}`}>
+                                            <Button variant="secondary" className="h-8 px-3 text-xs">
+                                                Review
                                             </Button>
                                         </Link>
                                         <Button

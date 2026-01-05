@@ -47,38 +47,38 @@ export const AppDetailsPage = () => {
     const moreApps = getVendorApps(app.vendorId).filter(a => a.id !== app.id && a.status === 'approved');
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            <Link to="/store" className="inline-flex items-center text-slate-400 hover:text-white mb-6">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+            <Link to="/store" className="inline-flex items-center text-slate-400 hover:text-white mb-4">
                 <ChevronLeft className="w-4 h-4 mr-1" /> Back to Store
             </Link>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Icon & Info */}
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <GlassCard className="text-center relative overflow-hidden group">
                         {/* Glow effect behind icon */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 blur-[50px] rounded-full group-hover:bg-primary/30 transition-all" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-primary/20 blur-[40px] rounded-full group-hover:bg-primary/30 transition-all" />
 
                         <img
                             src={app.iconUrl}
                             alt={app.name}
-                            className="w-40 h-40 rounded-[2.5rem] mx-auto mb-6 shadow-2xl relative z-10"
+                            className="w-28 h-28 rounded-3xl mx-auto mb-4 shadow-xl relative z-10"
                         />
 
-                        <div className="mb-6 flex justify-center">
-                            <StarRating rating={app.rating || 0} count={app.downloads} showCount={false} className="scale-125" />
+                        <div className="mb-4 flex justify-center">
+                            <StarRating rating={app.rating || 0} count={app.downloads} showCount={false} className="scale-110" />
                         </div>
 
                         <InstallButton
-                            className="w-full h-12 text-lg mb-3 shadow-lg shadow-primary/20"
+                            className="w-full h-10 text-base mb-2 shadow-lg shadow-primary/20"
                             onInstall={() => incrementDownloads(app.id)}
                         />
-                        <div className="text-xs text-slate-500 mt-4">{app.size} • v{app.version} • {app.downloads || '0'} Downloads</div>
+                        <div className="text-xs text-slate-500 mt-3">{app.size} • v{app.version} • {app.downloads || '0'} Downloads</div>
                     </GlassCard>
 
                     <GlassCard>
-                        <h3 className="font-bold text-slate-300 mb-4">Information</h3>
-                        <div className="space-y-4 text-sm">
+                        <h3 className="font-bold text-slate-300 mb-3 text-sm">Information</h3>
+                        <div className="space-y-3 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-slate-500">Provider</span>
                                 <span className="text-slate-200">{app.vendorName}</span>
@@ -93,8 +93,8 @@ export const AppDetailsPage = () => {
                                     {app.rating} <StarRating rating={app.rating} showCount={false} />
                                 </span>
                             </div>
-                            <div className="pt-4 border-t border-white/5">
-                                <p className="text-slate-500 mb-2">Tags</p>
+                            <div className="pt-3 border-t border-white/5">
+                                <p className="text-slate-500 mb-2 text-xs">Tags</p>
                                 <div className="flex flex-wrap gap-2">
                                     {app.tags.map(tag => (
                                         <span key={tag} className="px-2 py-1 rounded bg-white/5 text-xs text-slate-300">
@@ -108,20 +108,20 @@ export const AppDetailsPage = () => {
                 </div>
 
                 {/* Right Column: Main Details */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6">
                     <div>
-                        <h1 className="text-5xl font-bold mb-4 tracking-tight">{app.name}</h1>
-                        <p className="text-xl text-slate-400 mb-8 max-w-2xl">{app.shortDescription}</p>
+                        <h1 className="text-3xl font-bold mb-3 tracking-tight">{app.name}</h1>
+                        <p className="text-base text-slate-400 mb-6 max-w-2xl">{app.shortDescription}</p>
 
                         {/* Simulated Screenshots */}
                         {app.screenshots.length > 0 && (
-                            <div className="flex gap-4 overflow-x-auto pb-6 mb-8 no-scrollbar snap-x">
+                            <div className="flex gap-3 overflow-x-auto pb-4 mb-6 no-scrollbar snap-x">
                                 {app.screenshots.map((shot, i) => (
                                     <img
                                         key={i}
                                         src={shot}
                                         alt={`Screenshot ${i + 1} `}
-                                        className="h-72 rounded-2xl border border-white/10 shadow-lg flex-shrink-0 snap-center"
+                                        className="h-56 rounded-xl border border-white/10 shadow-lg flex-shrink-0 snap-center"
                                     />
                                 ))}
                             </div>
@@ -129,12 +129,34 @@ export const AppDetailsPage = () => {
 
 
 
-                        <div className="prose prose-invert max-w-none mb-12">
-                            <h3 className="text-2xl font-bold mb-4">About this app</h3>
-                            <p className="text-slate-300 leading-relaxed whitespace-pre-wrap text-lg">
+                        <div className="prose prose-invert max-w-none mb-8">
+                            <h3 className="text-xl font-bold mb-3">About this app</h3>
+                            <p className="text-slate-300 leading-relaxed whitespace-pre-wrap text-base">
                                 {app.fullDescription}
                             </p>
                         </div>
+
+                        {/* What's New Section - Show if updateChanges exists */}
+                        {app.updateChanges && (
+                            <div className="space-y-3 p-4 rounded-xl bg-slate-900/50 border border-white/10 mb-8">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-lg font-bold">What's New</h3>
+                                    <span className="text-xs text-blue-400">Version {app.version}</span>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-xs text-slate-500">
+                                        {app.lastUpdatedDate
+                                            ? new Date(app.lastUpdatedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                            : app.createdAt
+                                                ? new Date(app.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                                : ''}
+                                    </p>
+                                    <p className="text-slate-300 leading-relaxed whitespace-pre-wrap text-sm">
+                                        {app.updateChanges}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Version History */}
                         <VersionHistory history={app.versionHistory} />

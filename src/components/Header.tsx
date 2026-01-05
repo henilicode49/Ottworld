@@ -1,11 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { Menu, X, Upload, LogOut, User } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import logo from "@/assets/Final_Logo_IPWAS.png";
-import ThemeToggle from "@/components/ThemeToggle";
-import { useToast } from "@/hooks/use-toast";
+import { cn } from "../lib/utils";
+import logo from "../assets/Final_Logo_IPWAS.png";
+import ThemeToggle from "../components/ThemeToggle";
+import { useToast } from "../hooks/use-toast";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

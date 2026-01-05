@@ -25,6 +25,7 @@ import { AllApps } from './pages/admin/AllApps';
 import { VendorList } from './pages/admin/VendorList';
 import { VendorDetailsPage } from './pages/admin/VendorDetailsPage';
 import { AdminAppDetailsPage } from './pages/admin/AdminAppDetailsPage';
+import { VendorAppDetails } from './pages/VendorAppDetails';
 
 function App() {
   return (
@@ -45,6 +46,10 @@ function App() {
               <Route index element={<VendorDashboard />} />
               <Route path="add" element={<AddApp />} />
               <Route path="apps" element={<MyApps />} />
+              <Route path="app/edit/:id" element={<AddApp />} />
+              {/* <Route path="app/details/:id" element={<VendorAppDetails />} /> */}
+              <Route path="app/details/:id" element={<VendorAppDetails />} />
+
             </Route>
 
             {/* Admin Routes */}
@@ -55,6 +60,8 @@ function App() {
               <Route path="apps/:id" element={<AdminAppDetailsPage />} />
               <Route path="vendors" element={<VendorList />} />
               <Route path="vendors/:id" element={<VendorDetailsPage />} />
+
+
             </Route>
 
             {/* Fallback */}

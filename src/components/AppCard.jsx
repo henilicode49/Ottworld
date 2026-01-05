@@ -6,10 +6,13 @@ import { Download } from 'lucide-react';
 
 import { StarRating } from './ui/StarRating';
 
-export const AppCard = ({ app, variant = 'card' }) => {
+export const AppCard = ({ app, variant = 'card', linkTo }) => {
+    // Default link destination
+    const destination = linkTo || `/app/${app.id}`;
+
     if (variant === 'list') {
         return (
-            <Link to={`/app/${app.id}`}>
+            <Link to={destination}>
                 <div className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0 group">
                     <img
                         src={app.iconUrl}
@@ -35,7 +38,7 @@ export const AppCard = ({ app, variant = 'card' }) => {
     }
 
     return (
-        <Link to={`/app/${app.id}`}>
+        <Link to={destination}>
             <GlassCard className="h-full hover:-translate-y-1 hover:shadow-primary/10 transition-all duration-300 group p-5 flex flex-col">
                 <div className="flex items-start justify-between mb-4">
                     <img

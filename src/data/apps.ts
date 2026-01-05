@@ -47,6 +47,13 @@ export interface App {
   tags: string[];
   screenshots: string[];
   downloadUrl?: string;
+  reviews?: {
+    userName: string;
+    rating: number;
+    comment: string;
+    date: string;
+  }[];
+  updateChanges?: string; // Description of what changed in this update
 }
 
 export interface Category {

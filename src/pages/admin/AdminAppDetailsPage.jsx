@@ -4,7 +4,7 @@ import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { ArrowLeft, CheckCircle, XCircle, Download, Calendar, Tag, Smartphone, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Download, Calendar, Tag, Smartphone, ShieldAlert, AlertCircle } from 'lucide-react';
 
 export const AdminAppDetailsPage = () => {
     const { id } = useParams();
@@ -20,25 +20,17 @@ export const AdminAppDetailsPage = () => {
 
     const handleStatusUpdate = async (newStatus) => {
         setIsProcessing(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // In a real app, we'd call the context method.
-        // Since updateAppStatus might not be implemented in mock context yet, we'll need to check or just mock it.
-        // Assuming updateAppStatus exists or we need to implement it.
-        // For now, I'll assume the DataContext has updateApp functionality or I'll implement a temporary alert.
-        console.log(`Updating status to ${newStatus}`);
-
-        // If updateAppStatus exists in context:
         if (updateAppStatus) {
             updateAppStatus(id, newStatus);
         } else {
-            // Fallback if context method missing (will address in verify)
-            alert("Update Status logic needs to be connected to Context");
+            console.error("updateAppStatus function missing from context");
         }
 
         setIsProcessing(false);
-        navigate('/admin/apps');
+        navigate('/admin/apps'); // Verify this route exists, or use /admin/dashboard
     };
 
     return (
@@ -46,15 +38,16 @@ export const AdminAppDetailsPage = () => {
             <Button
                 variant="ghost"
                 className="pl-0 gap-2 text-slate-400 hover:text-white"
-                onClick={() => navigate('/admin/apps')}
+                onClick={() => navigate('/admin/dashboard')}
             >
-                <ArrowLeft className="w-4 h-4" /> Back to All Apps
+                <ArrowLeft className="w-4 h-4" /> Back to Dashboard
             </Button>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Left Column: App Icon & Actions */}
                 <div className="md:col-span-1 space-y-6">
                     <GlassCard className="flex flex-col items-center text-center p-6">
+                        {/* Use app.iconUrl for DataContext */}
                         <img src={app.iconUrl} alt={app.name} className="w-32 h-32 rounded-2xl shadow-lg mb-4 bg-slate-800" />
                         <h1 className="text-xl font-bold mb-1">{app.name}</h1>
                         <p className="text-sm text-slate-400 mb-4">{app.vendorName}</p>
@@ -63,7 +56,7 @@ export const AdminAppDetailsPage = () => {
                         <div className="w-full space-y-3">
                             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest text-left w-full mb-2">Moderation</h3>
 
-                            {app.status === 'pending' && (
+                            {(app.status === 'pending' || app.status === 'review') && (
                                 <>
                                     <Button
                                         className="w-full bg-green-500 hover:bg-green-600 border-none text-white gap-2"
@@ -117,7 +110,7 @@ export const AdminAppDetailsPage = () => {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-500 flex items-center gap-2"><Calendar className="w-4 h-4" /> Created</span>
-                                <span className="text-white">{new Date(app.createdAt).toLocaleDateString()}</span>
+                                <span className="text-white">{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}</span>
                             </div>
                         </div>
                     </GlassCard>
@@ -129,10 +122,25 @@ export const AdminAppDetailsPage = () => {
                         <h2 className="text-lg font-bold mb-4">Description</h2>
                         <div className="prose prose-invert max-w-none">
                             <p className="text-slate-300 leading-relaxed whitespace-pre-line">
-                                {app.fullDescription}
+                                {app.fullDescription || app.description}
                             </p>
                         </div>
                     </GlassCard>
+
+                    {/* Update Changes - Show if available */}
+                    {app.updateChanges && (
+                        <GlassCard className="border-blue-500/20 bg-blue-500/5">
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <AlertCircle className="w-5 h-5 text-blue-400" />
+                                Update Changes
+                            </h2>
+                            <div className="prose prose-invert max-w-none">
+                                <p className="text-slate-300 leading-relaxed whitespace-pre-line">
+                                    {app.updateChanges}
+                                </p>
+                            </div>
+                        </GlassCard>
+                    )}
 
                     <GlassCard>
                         <h2 className="text-lg font-bold mb-4">Screenshots</h2>
@@ -161,3 +169,5 @@ export const AdminAppDetailsPage = () => {
         </div>
     );
 };
+
+export default AdminAppDetailsPage;
