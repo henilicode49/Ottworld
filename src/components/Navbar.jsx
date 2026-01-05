@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Button } from './ui/Button';
+import { Button } from './ui/button';
 import { Search, ShoppingBag, User, LogOut } from 'lucide-react';
 
 export const Navbar = () => {
