@@ -20,6 +20,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '1.2.0',
         size: '150 MB',
         supportedPlatforms: ['Android', 'iOS'],
@@ -53,6 +54,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '2.0.1',
         size: '45 MB',
         supportedPlatforms: ['Android'],
@@ -81,6 +83,8 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'website',
+        websiteUrl: 'https://example.com/taskmaster',
         version: '1.0.5',
         size: '20 MB',
         supportedPlatforms: ['Android', 'iOS', 'Web'],
@@ -108,6 +112,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '0.0.1',
         size: '900 MB',
         supportedPlatforms: ['Android'],
@@ -136,6 +141,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '1.0.0',
         size: '120 MB',
         supportedPlatforms: ['Android', 'iOS'],
@@ -163,6 +169,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '3.1.0',
         size: '65 MB',
         supportedPlatforms: ['Android', 'iOS', 'Web'],
@@ -189,6 +196,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '1.4.2',
         size: '30 MB',
         supportedPlatforms: ['Android', 'iOS'],
@@ -216,6 +224,7 @@ export const MOCK_APPS = [
             'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80'
         ],
         apkUrl: '#',
+        appType: 'apk',
         version: '2.2.0',
         size: '80 MB',
         supportedPlatforms: ['Android', 'iOS'],

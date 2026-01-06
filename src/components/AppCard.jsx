@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { GlassCard } from './ui/GlassCard';
@@ -13,7 +14,12 @@ export const AppCard = ({ app, variant = 'card', linkTo }) => {
     if (variant === 'list') {
         return (
             <Link to={destination}>
-                <div className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0 group">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0 group"
+                >
                     <img
                         src={app.iconUrl}
                         alt={app.name}
@@ -32,46 +38,54 @@ export const AppCard = ({ app, variant = 'card', linkTo }) => {
                         </button>
                         <span className="text-[10px] text-slate-500">In-App Purchases</span>
                     </div>
-                </div>
+                </motion.div>
             </Link>
         );
     }
 
     return (
         <Link to={destination}>
-            <GlassCard className="h-full hover:-translate-y-1 hover:shadow-primary/10 transition-all duration-300 group p-5 flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                    <img
-                        src={app.iconUrl}
-                        alt={app.name}
-                        className="w-16 h-16 rounded-2xl bg-slate-800 object-cover shadow-lg group-hover:shadow-primary/20 transition-all"
-                    />
-                    {app.status !== 'approved' && <Badge status={app.status} />}
-                </div>
-
-                <h3 className="font-bold text-lg text-slate-100 mb-1 group-hover:text-primary transition-colors">
-                    {app.name}
-                </h3>
-                <p className="text-sm text-slate-400 mb-1">{app.vendorName}</p>
-
-                {/* Rating */}
-                <div className="mb-2">
-                    {app.rating ? <StarRating rating={app.rating} showCount={false} /> : <div className="h-4" />}
-                </div>
-
-                <p className="text-xs text-slate-500 line-clamp-2 mb-4 h-10">
-                    {app.shortDescription}
-                </p>
-
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                    <span className="text-xs px-2 py-1 rounded bg-white/5 text-slate-300">
-                        {app.category}
-                    </span>
-                    <div className="p-2 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Download className="w-4 h-4" />
+            <motion.div
+                whileHover={{ y: -4 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="h-full"
+            >
+                <GlassCard className="h-full hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group p-5 flex flex-col">
+                    <div className="flex items-start justify-between mb-4">
+                        <img
+                            src={app.iconUrl}
+                            alt={app.name}
+                            className="w-16 h-16 rounded-2xl bg-slate-800 object-cover shadow-lg group-hover:shadow-primary/20 transition-all duration-300"
+                        />
+                        {app.status !== 'approved' && <Badge status={app.status} />}
                     </div>
-                </div>
-            </GlassCard>
+
+                    <h3 className="font-bold text-lg text-slate-100 mb-1 group-hover:text-primary transition-colors">
+                        {app.name}
+                    </h3>
+                    <p className="text-sm text-slate-400 mb-1">{app.vendorName}</p>
+
+                    {/* Rating */}
+                    <div className="mb-2">
+                        {app.rating ? <StarRating rating={app.rating} showCount={false} /> : <div className="h-4" />}
+                    </div>
+
+                    <p className="text-xs text-slate-500 line-clamp-2 mb-4 h-10">
+                        {app.shortDescription}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                        <span className="text-xs px-2 py-1 rounded bg-white/5 text-slate-300">
+                            {app.category}
+                        </span>
+                        <div className="p-2 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-white transition-colors">
+                            <Download className="w-4 h-4" />
+                        </div>
+                    </div>
+                </GlassCard>
+            </motion.div>
         </Link>
     );
 };

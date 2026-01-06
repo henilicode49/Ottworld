@@ -71,6 +71,9 @@ export const AppDetailsPage = () => {
 
                         <InstallButton
                             className="w-full h-10 text-base mb-2 shadow-lg shadow-primary/20"
+                            url={app.apkUrl}
+                            filename={app.fileName || `${app.slug}.apk`}
+                            isWebsite={app.appType === 'website'}
                             onInstall={() => incrementDownloads(app.id)}
                         />
                         <div className="text-xs text-slate-500 mt-3">{app.size} • v{app.version} • {app.downloads || '0'} Downloads</div>

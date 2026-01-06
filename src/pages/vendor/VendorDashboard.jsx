@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Badge } from '../../components/ui/Badge';
 import { AppCard } from '../../components/AppCard';
+import axios from 'axios';
 
 export const VendorDashboard = () => {
     const { user } = useAuth();
@@ -13,7 +14,17 @@ export const VendorDashboard = () => {
     const approvedCount = myApps.filter(a => a.status === 'approved').length;
     const pendingCount = myApps.filter(a => a.status === 'pending').length;
     const totalDownloads = myApps.length * 1234; // Mock stat
+    // const [userData, setUserData] = useState(null)
 
+    // useEffect(() => {
+    //     (async () => {
+    //         const resultdata = await axios.post("http://122.167.187.175:4001/api/restaurant_login", { username: "priyank.icode49@gmail.com", password: "VP1VMXbj" })
+    //         console.log("resultdata", resultdata);
+    //         setUserData(resultdata?.data)
+    //     })()
+
+
+    // }, []);
     return (
         <div>
             <div className="mb-8">

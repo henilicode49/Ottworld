@@ -247,7 +247,7 @@ const VendorDashboard = () => {
           <Card className="glass">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Your Apps</CardTitle>
-              <Button variant="ghost" className="text-sm" onClick={() => navigate("/vendor/my-apps")}>
+              <Button variant="ghost" className="text-sm" onClick={() => navigate(`/${currentVendor?.businessName || 'vendor'}/dashboard`)}>
                 View All <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardHeader>
@@ -256,7 +256,7 @@ const VendorDashboard = () => {
                 {myApps.slice(0, 5).map((app) => (
                   <div
                     key={app.id}
-                    onClick={() => navigate(`/vendor/app/${app.id}`)}
+                    onClick={() => navigate(`/vendor/app/details/${app.id}`)}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10 group cursor-pointer"
                   >
                     <div className="flex items-center gap-4">

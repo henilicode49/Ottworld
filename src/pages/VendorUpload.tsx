@@ -577,7 +577,7 @@ const VendorUpload = () => {
                   </Button>
                   <Button type="submit" variant="gradient" className="shadow-lg shadow-primary/20">
                     <Upload className="h-4 w-4 mr-2" />
-                    {isEditMode ? "Review App" : "Submit App"}
+                    {isEditMode ? "Update App" : "Submit App"}
                   </Button>
                 </div>
 

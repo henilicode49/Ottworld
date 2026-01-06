@@ -31,7 +31,12 @@ export const AddApp = () => {
         apkUrl: '',
         screenshots: '', // Textarea input for comma/newline separated URLs
         supportedPlatforms: ['Android'],
-        updateChanges: '' // New field for update changes
+        updateChanges: '', // New field for update changes
+        appType: 'apk', // 'apk' | 'website'
+        websiteUrl: '',
+        websiteUrl: '',
+        apkFile: null,
+        iconFile: null
     });
 
     // Pre-fill form data if in edit mode
@@ -51,7 +56,10 @@ export const AddApp = () => {
                     apkUrl: '', // DO NOT pre-fill APK URL - force re-upload
                     screenshots: Array.isArray(appToEdit.screenshots) ? appToEdit.screenshots.join('\n') : appToEdit.screenshots,
                     supportedPlatforms: appToEdit.supportedPlatforms || ['Android'],
-                    updateChanges: '' // Always empty for new updates
+                    updateChanges: '', // Always empty for new updates
+                    appType: appToEdit.appType || (appToEdit.websiteUrl || (appToEdit.apkUrl && !appToEdit.apkUrl.endsWith('.apk') && !appToEdit.apkUrl.endsWith('.aab')) ? 'website' : 'apk'),
+                    websiteUrl: appToEdit.websiteUrl || ((appToEdit.appType === 'website' || (!appToEdit.appType && appToEdit.apkUrl && !appToEdit.apkUrl.endsWith('.apk'))) ? appToEdit.apkUrl : ''),
+                    apkFile: null
                 });
             } else if (appToEdit && appToEdit.vendorId !== user.id) {
                 alert('You cannot edit this app');
@@ -74,10 +82,17 @@ export const AddApp = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validate APK URL is provided
-        if (!formData.apkUrl || formData.apkUrl.trim() === '') {
-            alert('Please provide an APK/Download URL');
-            return;
+        // Validate based on App Type
+        if (formData.appType === 'apk') {
+            if ((!formData.apkUrl || formData.apkUrl.trim() === '') && !formData.apkFile) {
+                alert('Please provide an App Package URL (APK/EXE) or upload a file');
+                return;
+            }
+        } else {
+            if (!formData.websiteUrl || formData.websiteUrl.trim() === '') {
+                alert('Please provide a Website URL');
+                return;
+            }
         }
 
         setLoading(true);
@@ -94,12 +109,18 @@ export const AddApp = () => {
                 ...formData,
                 slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
                 // Use provided icon or fallback to seed
-                iconUrl: formData.iconUrl || `https://api.dicebear.com/7.x/shapes/svg?seed=${formData.name}`,
+                // Use provided icon or fallback to seed
+                iconUrl: formData.iconFile ? URL.createObjectURL(formData.iconFile) : (formData.iconUrl || `https://api.dicebear.com/7.x/shapes/svg?seed=${formData.name}`),
                 screenshots: processedScreenshots.length > 0 ? processedScreenshots : [
                     'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&q=80',
                     'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80'
                 ], // Fallback mocks if empty
-                apkUrl: formData.apkUrl,
+                apkUrl: formData.appType === 'apk' ? formData.apkUrl : formData.websiteUrl,
+                websiteUrl: formData.appType === 'website' ? formData.websiteUrl : '',
+                // If it's a file upload, in a real app we'd upload it and get a URL. 
+                // Here we just keep the existing logic or use the mock URL if provided.
+                apkFile: formData.apkFile,
+                fileName: formData.apkFile ? formData.apkFile.name : (formData.appType === 'apk' ? (formData.apkUrl.split('/').pop().includes('.') ? formData.apkUrl.split('/').pop() : `${formData.name.replace(/\s+/g, '-')}.apk`) : ''),
                 tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
                 vendorId: user.id,
                 vendorName: user.name,
@@ -207,19 +228,50 @@ export const AddApp = () => {
                         <h3 className="text-base md:text-lg font-bold text-white border-b border-white/10 pb-2">Media Assets</h3>
 
                         <div className="space-y-1.5 md:space-y-2">
-                            <label className="text-xs md:text-sm font-medium text-slate-300">App Icon URL</label>
+                            <label className="text-xs md:text-sm font-medium text-slate-300">App Icon (Image or URL)</label>
                             <div className="flex gap-4 items-start">
-                                <Input
-                                    placeholder="https://..."
-                                    value={formData.iconUrl}
-                                    onChange={e => setFormData({ ...formData, iconUrl: e.target.value })}
-                                    className="flex-1 py-2 text-sm"
-                                />
-                                <div className="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+                                <div className="flex-1 space-y-3">
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={e => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setFormData({
+                                                        ...formData,
+                                                        iconFile: file,
+                                                        iconUrl: URL.createObjectURL(file)
+                                                    });
+                                                }
+                                            }}
+                                            className="w-full text-sm text-slate-400
+                                            file:mr-4 file:py-2 file:px-4
+                                            file:rounded-full file:border-0
+                                            file:text-xs file:font-semibold
+                                            file:bg-purple-600 file:text-white
+                                            file:cursor-pointer hover:file:bg-purple-700
+                                            bg-white/5 rounded-lg border border-white/10 p-1"
+                                        />
+                                    </div>
+                                    <div className="relative flex items-center gap-2">
+                                        <span className="text-xs text-slate-500">OR</span>
+                                        <Input
+                                            placeholder="https://..."
+                                            value={formData.iconUrl}
+                                            onChange={e => setFormData({ ...formData, iconUrl: e.target.value, iconFile: null })}
+                                            className="flex-1 py-2 text-sm"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg">
                                     {formData.iconUrl ? (
                                         <img src={formData.iconUrl} alt="Preview" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="text-[10px] text-slate-500">Preview</div>
+                                        <div className="text-[10px] text-slate-500 flex flex-col items-center">
+                                            <Upload className="w-4 h-4 mb-1" />
+                                            Preview
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -227,7 +279,7 @@ export const AddApp = () => {
                         </div>
 
                         <div className="space-y-1.5 md:space-y-2">
-                            <label className="text-xs md:text-sm font-medium text-slate-300">Screenshots (URLs)</label>
+                            <label className="text-xs md:text-sm font-medium text-slate-300">Screenshots (Optional)</label>
                             <TextArea
                                 placeholder="Paste image URLs here (one per line)..."
                                 className="h-24 md:h-32 font-mono text-xs md:text-sm"
@@ -241,6 +293,33 @@ export const AddApp = () => {
                     {/* Technical Details */}
                     <section className="space-y-4">
                         <h3 className="text-base md:text-lg font-bold text-white border-b border-white/10 pb-2">Technical Details</h3>
+
+                        {/* App Type Selection */}
+                        <div className="space-y-1.5 md:space-y-2">
+                            <label className="text-xs md:text-sm font-medium text-slate-300">App Type</label>
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="appType"
+                                        checked={formData.appType === 'apk'}
+                                        onChange={() => setFormData({ ...formData, appType: 'apk' })}
+                                        className="w-4 h-4 text-purple-600 bg-slate-800 border-gray-600 focus:ring-purple-600 ring-offset-slate-900"
+                                    />
+                                    <span className="text-sm text-slate-300">App Package (APK / EXE)</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="appType"
+                                        checked={formData.appType === 'website'}
+                                        onChange={() => setFormData({ ...formData, appType: 'website' })}
+                                        className="w-4 h-4 text-purple-600 bg-slate-800 border-gray-600 focus:ring-purple-600 ring-offset-slate-900"
+                                    />
+                                    <span className="text-sm text-slate-300">Website Link</span>
+                                </label>
+                            </div>
+                        </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                             <div className="space-y-1.5 md:space-y-2">
@@ -263,21 +342,65 @@ export const AddApp = () => {
                             </div>
                             <div className="col-span-2 md:col-span-1 space-y-1.5 md:space-y-2">
                                 <label className="text-xs md:text-sm font-medium text-slate-300">
-                                    {isEditMode ? 'Updated Download/APK URL *' : 'Download/APK URL'}
+                                    {formData.appType === 'apk'
+                                        ? (isEditMode ? 'Updated Package URL *' : 'Package URL (APK/EXE)')
+                                        : 'Website URL *'}
                                 </label>
-                                {isEditMode && (
+
+                                {isEditMode && formData.appType === 'apk' && (
                                     <p className="text-xs text-yellow-500 flex items-center gap-1">
                                         <AlertCircle className="h-3 w-3" />
-                                        You must provide a new APK URL to update your app
+                                        You must provide a new package to update your app
                                     </p>
                                 )}
-                                <Input
-                                    required={isEditMode}
-                                    placeholder="https://..."
-                                    value={formData.apkUrl}
-                                    onChange={e => setFormData({ ...formData, apkUrl: e.target.value })}
-                                    className="py-2 text-sm"
-                                />
+
+                                {formData.appType === 'apk' ? (
+                                    <div className="space-y-3">
+                                        {/* Package File Upload */}
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                accept=".apk,.aab,.exe"
+                                                onChange={e => setFormData({ ...formData, apkFile: e.target.files[0], apkUrl: URL.createObjectURL(e.target.files[0]) })}
+                                                className="w-full text-sm text-slate-400
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-full file:border-0
+                                                file:text-xs file:font-semibold
+                                                file:bg-purple-600 file:text-white
+                                                file:cursor-pointer hover:file:bg-purple-700
+                                                bg-white/5 rounded-lg border border-white/10 p-1"
+                                            />
+                                            {formData.apkFile && (
+                                                <p className="text-[10px] text-green-400 mt-1">
+                                                    Selected: {formData.apkFile.name}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="relative flex items-center gap-2">
+                                            <span className="text-xs text-slate-500">OR</span>
+                                            <Input
+                                                required={isEditMode && !formData.apkFile}
+                                                placeholder="https://example.com/app.apk"
+                                                value={formData.apkUrl}
+                                                onChange={e => setFormData({ ...formData, apkUrl: e.target.value })}
+                                                className="py-2 text-sm flex-1"
+                                            />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                                        <Input
+                                            required={formData.appType === 'website'}
+                                            type="url"
+                                            placeholder="https://yourwebsite.com"
+                                            value={formData.websiteUrl}
+                                            onChange={e => setFormData({ ...formData, websiteUrl: e.target.value })}
+                                            className="py-2 text-sm pl-9"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
 

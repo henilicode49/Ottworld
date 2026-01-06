@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { StarRating } from './ui/StarRating';
 import { ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const HeroCarousel = ({ featuredApps }) => {
     const [current, setCurrent] = useState(0);
@@ -10,71 +11,113 @@ export const HeroCarousel = ({ featuredApps }) => {
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrent(prev => (prev + 1) % featuredApps.length);
-        }, 5000);
+        }, 6000);
         return () => clearInterval(timer);
     }, [featuredApps.length]);
 
     if (featuredApps.length === 0) return null;
 
     return (
-        <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden rounded-2xl mb-8 md:mb-12 group">
-            {featuredApps.map((app, index) => (
-                <div
-                    key={app.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                        }`}
+        <div className="relative w-full h-[450px] md:h-[550px] overflow-hidden rounded-3xl mb-8 md:mb-12 group shadow-2xl shadow-black/50 ring-1 ring-white/10">
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={current}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.7 }}
+                    className="absolute inset-0"
                 >
                     {/* Background Image */}
                     <div className="absolute inset-0">
                         <img
-                            src={app.screenshots[0] || app.iconUrl}
+                            src={featuredApps[current].screenshots[0] || featuredApps[current].iconUrl}
                             alt="Hero"
                             className="w-full h-full object-cover"
                         />
-                        {/* Gradient adjusted for better brightness - reduced opacity */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/10 to-transparent" />
+                        {/* Improved Gradient overlay for better text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-transparent to-transparent" />
                     </div>
 
                     {/* Content */}
-                    <div className="absolute bottom-0 left-0 p-6 md:p-10 max-w-2xl w-full">
-                        <div className="mb-3 md:mb-4 inline-flex items-center gap-2 px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-primary/20 text-primary border border-primary/20 backdrop-blur-md">
-                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Featured</span>
-                        </div>
-                        <div className="flex items-end gap-4 md:block mb-4 md:mb-6">
-                            <img src={app.iconUrl} className="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-2xl" />
+                    <div className="absolute bottom-0 left-0 p-8 md:p-12 max-w-3xl w-full z-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/20 backdrop-blur-md"
+                        >
+                            <span className="text-xs font-bold uppercase tracking-widest">Featured App</span>
+                        </motion.div>
+
+                        <div className="flex items-end gap-6 mb-6">
+                            <motion.img
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.2 }}
+                                src={featuredApps[current].iconUrl}
+                                className="w-20 h-20 md:w-28 md:h-28 rounded-3xl shadow-2xl border border-white/10"
+                            />
                             <div className="md:hidden">
-                                <h2 className="text-2xl font-bold text-white leading-tight">{app.name}</h2>
-                                <StarRating rating={app.rating} showCount={false} />
+                                <motion.h2
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="text-3xl font-bold text-white leading-tight"
+                                >
+                                    {featuredApps[current].name}
+                                </motion.h2>
+                                <StarRating rating={featuredApps[current].rating} showCount={false} />
                             </div>
                         </div>
-                        <h2 className="hidden md:block text-5xl font-bold text-white mb-4 leading-tight">{app.name}</h2>
-                        <p className="text-sm md:text-xl text-slate-300 mb-4 md:mb-6 line-clamp-2">{app.shortDescription}</p>
-                        <div className="flex items-center gap-4 md:gap-6">
-                            <Link to={`/app/${app.id}`} className="flex-1 md:flex-none">
-                                <Button className="h-10 md:h-14 px-6 md:px-8 text-sm md:text-lg rounded-xl shadow-xl shadow-primary/20 w-full md:w-auto">
-                                    {/* Mobile text vs Desktop text */}
-                                    <span className="md:hidden">Get</span>
-                                    <span className="hidden md:inline">View Details</span>
-                                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5 ml-1 inline" />
+
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="hidden md:block text-6xl font-black text-white mb-4 leading-tight tracking-tight"
+                        >
+                            {featuredApps[current].name}
+                        </motion.h2>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-base md:text-xl text-slate-300 mb-8 line-clamp-2 max-w-xl font-medium"
+                        >
+                            {featuredApps[current].shortDescription}
+                        </motion.p>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="flex items-center gap-8"
+                        >
+                            <Link to={`/app/${featuredApps[current].id}`}>
+                                <Button className="h-14 px-10 text-lg rounded-2xl shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95">
+                                    View Details
+                                    <ChevronRight className="w-5 h-5 ml-2 inline" />
                                 </Button>
                             </Link>
-                            <div className="hidden md:flex flex-col">
-                                <StarRating rating={app.rating} showCount={false} />
-                                <span className="text-sm text-slate-400 mt-1">{app.downloads} downloads</span>
+                            <div className="hidden md:flex flex-col border-l border-white/20 pl-6">
+                                <StarRating rating={featuredApps[current].rating} showCount={false} />
+                                <span className="text-sm text-slate-400 mt-1 font-medium">{featuredApps[current].downloads} downloads</span>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
-                </div>
-            ))}
+                </motion.div>
+            </AnimatePresence>
 
             {/* Indicators */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-6 md:right-10 z-20 flex gap-2">
+            <div className="absolute bottom-6 right-6 md:right-12 z-20 flex gap-3 bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/5">
                 {featuredApps.map((_, idx) => (
                     <button
                         key={idx}
                         onClick={() => setCurrent(idx)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === current ? 'w-8 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'
+                        className={`h-2 rounded-full transition-all duration-500 ease-out ${idx === current ? 'w-8 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'
                             }`}
                     />
                 ))}

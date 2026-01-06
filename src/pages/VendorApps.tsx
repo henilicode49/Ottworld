@@ -183,7 +183,7 @@ const VendorApps = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          navigate(`/vendor/app/${app.id}`);
+                          navigate(`/vendor/app/edit/${app.id}`);
                         }}
                       >
                         <Edit className="h-4 w-4 text-primary" />

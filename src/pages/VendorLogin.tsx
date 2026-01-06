@@ -11,6 +11,8 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/context/AppContext";
 
+import { sendWelcomeEmail } from "@/services/EmailService";
+
 const VendorLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -49,6 +51,12 @@ const VendorLogin = () => {
     const success = await registerVendor(signupData.name, signupData.email, signupData.password, signupData.companyName);
     if (success) {
       toast({ title: "Success", description: "Account created successfully!" });
+
+      // Trigger Welcome Email Simulation
+      sendWelcomeEmail(signupData.email, signupData.name).then(() => {
+        toast({ title: "Email Sent", description: `Welcome email sent to ${signupData.email}` });
+      });
+
       navigate("/vendor/subscription");
     } else {
       toast({ title: "Error", description: "User already exists", variant: "destructive" });
