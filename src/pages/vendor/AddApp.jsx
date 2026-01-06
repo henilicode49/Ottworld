@@ -34,7 +34,6 @@ export const AddApp = () => {
         updateChanges: '', // New field for update changes
         appType: 'apk', // 'apk' | 'website'
         websiteUrl: '',
-        websiteUrl: '',
         apkFile: null,
         iconFile: null
     });
